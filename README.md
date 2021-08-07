@@ -4,7 +4,13 @@ Output all the printable ASCII characters in various representations and formats
 
 # Install
 
-A good way to install is pending. For now get `bin/printable-ascii` into your `$PATH` however you like.
+Get `bin/printable-ascii` into your `$PATH` however you like.
+
+If you'd like to use Homebrew while addition to Homebrew is pending you can install from this local formula.
+
+```
+brew install --formula ./Formula/printable-ascii.rb
+```
 
 # Usage
 
