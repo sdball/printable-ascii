@@ -1,0 +1,157 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+
+class Output
+  def self.for(format)
+    case format
+    when :json
+      JsonOutput
+    when :console
+      ConsoleOutput
+    else
+      ConsoleOutput
+    end
+  end
+end
+
+class JsonOutput
+  def self.output(options, header, ascii)
+    require 'json'
+    puts ascii.to_json
+  end
+end
+
+class ConsoleOutput
+  def self.output(options, header, ascii)
+    header_string = header.reduce("") do |result, element|
+      result << element.ljust(element.length + 3)
+    end
+    puts header_string.strip if options[:header]
+    ascii.each do |row|
+      row_string = ""
+      options[:representations].each_with_index do |representation, index|
+        if index == options[:representations].length - 1
+          row_string << row[representation]
+        else
+          row_string << row[representation].ljust(header[index].length + 3)
+        end
+      end
+      puts row_string
+    end
+  end
+end
+
+class PrintableAscii
+  VERSION = [1, 0, 0]
+
+  def main
+    options = Configuration.parse_options(ARGV)
+    if options[:representations] != [:character] && options[:header].nil?
+      options[:header] = true
+    end
+    header = build_header(options)
+    ascii = build_ascii(options)
+    Output.for(options[:format]).output(options, header, ascii)
+  end
+
+  def build_header(options)
+    options[:representations].map do |choice|
+      choice.to_s.upcase
+    end
+  end
+
+  def build_ascii(options)
+    options[:starting].upto(options[:ending]).map do |n|
+      result = {}
+      options[:representations].map do |choice|
+        result[choice] = format(n, choice)
+      end
+      result
+    end
+  end
+
+  def format(number, representation)
+    case representation
+    when :character
+      number.chr
+    when :binary
+      sprintf("%b", number)
+    when :octal
+      sprintf("%o", number)
+    when :decimal
+      sprintf("%d", number)
+    when :hexadecimal
+      sprintf("%x", number)
+    else
+      "#{representation} is an unknown format"
+    end
+  end
+end
+
+class Configuration
+  def self.parse_options(argv)
+    options = {
+      representations: [:character],
+      format: :console,
+      starting: 32,
+      ending: 126,
+    }
+
+    parser = OptionParser.new do |opts|
+      opts.banner = "Usage: #{$PROGRAM_NAME} [options]"
+
+      opts.on_tail("-h", "--help", "Show this message") do |v|
+        puts opts
+        exit
+      end
+
+      opts.on_tail("--version", "Show version") do
+        puts PrintableAscii::VERSION.join('.')
+        exit
+      end
+
+      opts.on("-d", "--decimal", "Output decimal representation") do
+        options[:representations] << :decimal
+      end
+
+      opts.on("-b", "--binary", "Output binary representation") do
+        options[:representations] << :binary
+      end
+
+      opts.on("-x", "--hexadecimal", "Output hexadecimal representation") do
+        options[:representations] << :hexadecimal
+      end
+
+      opts.on("-o", "--octal", "Output octal representation") do
+        options[:representations] << :octal
+      end
+
+      opts.on("--header", "Include the header in output") do
+        options[:header] = true
+      end
+
+      opts.on("--no-header", "Omit the header from output") do
+        options[:header] = false
+      end
+
+      opts.on("--json", "JSON output") do
+        options[:format] = :json
+      end
+    end
+
+    begin
+      parser.parse!(argv)
+    rescue OptionParser::InvalidOption => e
+      $stderr.puts e
+      $stderr.puts parser
+      exit 1
+    end
+
+    options
+  end
+end
+
+if $0 == __FILE__
+  PrintableAscii.new.main
+end
