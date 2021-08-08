@@ -163,14 +163,22 @@ class Configuration
         options[:format] = :json
       end
 
-      opts.on("-s", "--start-at NUMBER", Integer, "Start ASCII list at NUMBER (base10): 32-126") do |n|
-        n = restrict_to_printable_ascii(n, "start")
-        options[:start_at] = n
+      opts.on("-s", "--start-at NUMBER|ASCII", "Start ASCII list at base10 NUMBER (32-126) or ASCII character") do |given|
+        if given.length == 1 && given.ascii_only?
+          start_at = given.ord
+        else
+          start_at = restrict_to_printable_ascii(given.to_i, "start")
+        end
+        options[:start_at] = start_at
       end
 
-      opts.on("-e", "--end-at NUMBER", Integer, "End ASCII list at NUMBER (base10): 32-126") do |n|
-        n = restrict_to_printable_ascii(n, "end")
-        options[:end_at] = n
+      opts.on("-e", "--end-at NUMBER|ASCII", "End ASCII list at base10 NUMBER (32-126) or ASCII character") do |given|
+        if given.length == 1 && given.ascii_only?
+          end_at = given.ord
+        else
+          end_at = restrict_to_printable_ascii(given.to_i, "end")
+        end
+        options[:end_at] = end_at
       end
 
       opts.on("--random NUMBER", Integer, "Output NUMBER of random printable ASCII characters") do |n|
