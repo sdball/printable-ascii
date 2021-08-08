@@ -43,7 +43,7 @@ class ConsoleOutput
 end
 
 class PrintableAscii
-  VERSION = [1, 0, 0]
+  VERSION = [1, 2, 0]
 
   def main
     options = Configuration.parse_options(ARGV)
