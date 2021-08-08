@@ -136,7 +136,7 @@ $ printable-ascii --decimal --hex --binary --json | jq -c '.[]' | head
 
 ## Start and End
 
-You can start/end the output at any ASCII integer within the printable range in base10 (32-126).
+You can start/end the output at any ASCII integer within the printable range in base10 (32-126) or at any single ASCII character.
 
 ```
 $ printable-ascii --start-at 65 --end-at 75
@@ -153,9 +153,96 @@ J
 K
 ```
 
-If you pick a number greater than 126 it will be changed to 126. If you pick a number less than 32 it will be changed to 32.
+```
+$ printable-ascii --start-at A --end-at K
+A
+B
+C
+D
+E
+F
+G
+H
+I
+J
+K
+```
 
-If you pick an end less than the start then you get no output.
+To reliably use punctuation characters as start/end you must quote them due to shell behavior.
+
+```
+$ printable-ascii --start-at '"' --end-at "(" --decimal
+CHARACTER   DECIMAL
+"           34
+#           35
+$           36
+%           37
+&           38
+'           39
+(           40
+```
+
+```
+$ printable-ascii --start-at " " --end-at "(" --decimal
+CHARACTER   DECIMAL
+            32
+!           33
+"           34
+#           35
+$           36
+%           37
+&           38
+'           39
+(           40
+```
+
+If you choose an end that's less than the start then you get no output.
+
+```
+$ bin/printable-ascii --start-at 40 --end-at 35
+```
+
+## Random
+
+The `--random NUMBER` option will output `NUMBER` of random printable ASCII characters.
+
+If you combine this option with `--start-at` / `--end-at` then the random printable ASCII characters will be pulled from that range.
+
+```
+$ printable-ascii --random 8 --start-at 65 --end-at 90
+P
+Y
+O
+R
+E
+B
+J
+I
+```
+
+```
+$ printable-ascii --random 1 --start-at 65 --end-at 66
+A
+```
+
+```
+$ printable-ascii --random 1 --start-at 65 --end-at 66
+B
+```
+
+```
+$ printable-ascii --start-at A --end-at F --json --random 10 | jq -c '.[]'
+{"character":"F"}
+{"character":"B"}
+{"character":"B"}
+{"character":"B"}
+{"character":"E"}
+{"character":"F"}
+{"character":"E"}
+{"character":"E"}
+{"character":"A"}
+{"character":"D"}
+```
 
 # Full Output why not?
 
