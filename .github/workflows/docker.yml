@@ -15,8 +15,10 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
 
-      -
-        name: Set up Docker Buildx
+      - name: Check script version matches tagged version
+        run: git describe --tags | awk -F '-' '{print $1}' | grep -q "$(./bin/printable-ascii --version)"
+
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
       - name: Extract metadata (tags, labels) for Docker
