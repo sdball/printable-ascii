@@ -47,12 +47,8 @@ class PrintableAscii
 
   def main
     options = Configuration.parse_options(ARGV)
-    if options[:representations] != [:character] && options[:header].nil?
-      options[:header] = true
-    end
     header = build_header(options)
     ascii = build_ascii(options)
-    ascii = lazy_random_enumerator(ascii, options[:random]) if options[:random]
     Output.for(options[:format]).output(options, header, ascii)
   end
 
@@ -63,13 +59,18 @@ class PrintableAscii
   end
 
   def build_ascii(options)
-    options[:start_at].upto(options[:end_at]).map do |n|
-      result = {}
-      options[:representations].map do |choice|
-        result[choice] = format(n, choice)
+    ascii_list = []
+    options[:ranges].each do |range|
+      range[0].upto(range[1]) do |n|
+        result = {}
+        options[:representations].each do |choice|
+          result[choice] = format(n, choice)
+        end
+        ascii_list << result
       end
-      result
     end
+    ascii_list = lazy_random_enumerator(ascii_list, options[:random]) if options[:random]
+    ascii_list
   end
 
   def lazy_random_enumerator(list, count)
@@ -114,12 +115,25 @@ class Configuration
     return n
   end
 
+  def self.parse_start_end(given, context="")
+    context << " " if context != ""
+    if given.length == 1 && given.ascii_only?
+      given.ord
+    else
+      begin
+        given = Integer(given)
+      rescue ArgumentError
+        raise OptionParser::InvalidArgument.new("#{given} is not a valid value")
+      end
+      restrict_to_printable_ascii(given, context)
+    end
+  end
+
   def self.parse_options(argv)
     options = {
       representations: [:character],
       format: :console,
-      start_at: 32,
-      end_at: 126,
+      ranges: [],
     }
 
     parser = OptionParser.new do |opts|
@@ -164,25 +178,26 @@ class Configuration
       end
 
       opts.on("-s", "--start-at NUMBER|ASCII", "Start ASCII list at base10 NUMBER (32-126) or ASCII character") do |given|
-        if given.length == 1 && given.ascii_only?
-          start_at = given.ord
-        else
-          start_at = restrict_to_printable_ascii(given.to_i, "start")
-        end
+        start_at = parse_start_end(given)
         options[:start_at] = start_at
       end
 
       opts.on("-e", "--end-at NUMBER|ASCII", "End ASCII list at base10 NUMBER (32-126) or ASCII character") do |given|
-        if given.length == 1 && given.ascii_only?
-          end_at = given.ord
-        else
-          end_at = restrict_to_printable_ascii(given.to_i, "end")
-        end
+        end_at = parse_start_end(given)
         options[:end_at] = end_at
       end
 
       opts.on("--random NUMBER", Integer, "Output NUMBER of random printable ASCII characters") do |n|
         options[:random] = n
+      end
+
+      opts.on("--range START-END", "Restrict the ASCII list to start-end. Can be supplied multiple times. Supersedes --start-at and --end-at arguments.") do |r|
+        (start, finish) = r.split("-")
+        start = parse_start_end(start, "start of range")
+        finish = parse_start_end(finish, "end of range")
+        options[:ranges] << [start, finish]
+      rescue NoMethodError
+        raise OptionParser::InvalidArgument.new(r)
       end
     end
 
@@ -196,6 +211,29 @@ class Configuration
       $stderr.puts e
       $stderr.puts parser
       exit 1
+    rescue ArgumentError => e
+      $stderr.puts e
+      $stderr.puts parser
+      exit 1
+    end
+
+    massage_options(options)
+  end
+
+  def self.massage_options(options)
+    if options[:representations] != [:character] && options[:header].nil?
+      options[:header] = true
+    end
+
+    if options[:ranges].length > 0
+      $stderr.puts "--start-at is ignored if --range is given" if ! options[:start_at].nil?
+      $stderr.puts "--end-at is ignored if --range is given" if ! options[:end_at].nil?
+    end
+
+    if options[:ranges].length == 0
+      start_at = options[:start_at] ? options[:start_at] : 32
+      end_at = options[:end_at] ? options[:end_at] : 126
+      options[:ranges] << [start_at, end_at]
     end
 
     options
