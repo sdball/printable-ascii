@@ -42,6 +42,12 @@ $
 )
 ```
 
+## Help text
+
+Help is accessible with `-h` or `--help`
+
+## Representations
+
 You can add additional representations of the characters with `-dbxo` as described in `--help`.
 
 ```
@@ -57,6 +63,58 @@ $           36        24            100100
 '           39        27            100111
 (           40        28            101000
 ```
+
+Fun fact, you can add as many duplicate representations as you want!
+
+```
+$ printable-ascii -ooddxx --start-at 65 --end-at 71
+CHARACTER   OCTAL   OCTAL   DECIMAL   DECIMAL   HEXADECIMAL   HEXADECIMAL
+A           101     101     65        65        41            41
+B           102     102     66        66        42            42
+C           103     103     67        67        43            43
+D           104     104     68        68        44            44
+E           105     105     69        69        45            45
+F           106     106     70        70        46            46
+G           107     107     71        71        47            47
+```
+
+## Header
+
+In default usage the header row shows up when you add additional representations.
+
+You can force the header to appear with `--header`
+
+```
+$ printable-ascii --header | head
+CHARACTER
+
+!
+"
+#
+$
+%
+&
+'
+(
+```
+
+You can force the header to be omitted with `--no-header`.
+
+```
+$ printable-ascii --no-header -dxo | head
+            32        20            40
+!           33        21            41
+"           34        22            42
+#           35        23            43
+$           36        24            44
+%           37        25            45
+&           38        26            46
+'           39        27            47
+(           40        28            50
+)           41        29            51
+```
+
+The header declarations have no effect on the JSON output.
 
 ## JSON
 
@@ -76,20 +134,28 @@ $ printable-ascii --decimal --hex --binary --json | jq -c '.[]' | head
 {"character":")","decimal":"41","hexadecimal":"29","binary":"101001"}
 ```
 
-## Help text
+## Start and End
+
+You can start/end the output at any ASCII integer within the printable range in base10 (32-126).
 
 ```
-Usage: ./bin/printable-ascii [options]
-    -d, --decimal                    Output decimal representation
-    -b, --binary                     Output binary representation
-    -x, --hexadecimal                Output hexadecimal representation
-    -o, --octal                      Output octal representation
-        --header                     Include the header in output
-        --no-header                  Omit the header from output
-        --json                       JSON output
-    -h, --help                       Show this message
-        --version                    Show version
+$ printable-ascii --start-at 65 --end-at 75
+A
+B
+C
+D
+E
+F
+G
+H
+I
+J
+K
 ```
+
+If you pick a number greater than 126 it will be changed to 126. If you pick a number less than 32 it will be changed to 32.
+
+If you pick an end less than the start then you get no output.
 
 # Full Output why not?
 
