@@ -18,7 +18,7 @@ end
 class JsonOutput
   def self.output(options, header, ascii)
     require 'json'
-    puts ascii.to_json
+    puts ascii.to_a.to_json
   end
 end
 
@@ -52,6 +52,7 @@ class PrintableAscii
     end
     header = build_header(options)
     ascii = build_ascii(options)
+    ascii = lazy_random_enumerator(ascii, options[:random]) if options[:random]
     Output.for(options[:format]).output(options, header, ascii)
   end
 
@@ -69,6 +70,14 @@ class PrintableAscii
       end
       result
     end
+  end
+
+  def lazy_random_enumerator(list, count)
+    Enumerator.new do |e|
+      loop {
+        e << list.sample
+      }
+    end.take(count).lazy
   end
 
   def format(number, representation)
@@ -162,6 +171,10 @@ class Configuration
       opts.on("-e", "--end-at NUMBER", Integer, "End ASCII list at NUMBER (base10): 32-126") do |n|
         n = restrict_to_printable_ascii(n, "end")
         options[:end_at] = n
+      end
+
+      opts.on("--random NUMBER", Integer, "Output NUMBER of random printable ASCII characters") do |n|
+        options[:random] = n
       end
     end
 
