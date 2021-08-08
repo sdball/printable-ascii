@@ -62,7 +62,7 @@ class PrintableAscii
   end
 
   def build_ascii(options)
-    options[:starting].upto(options[:ending]).map do |n|
+    options[:start_at].upto(options[:end_at]).map do |n|
       result = {}
       options[:representations].map do |choice|
         result[choice] = format(n, choice)
@@ -90,12 +90,27 @@ class PrintableAscii
 end
 
 class Configuration
+  def self.restrict_to_printable_ascii(n, context="")
+    context << " " if context != ""
+    if n < 32
+      $stderr.puts "#{context}cannot be less than 32: changing to 32"
+      return 32
+    end
+
+    if n > 126
+      $stderr.puts "#{context}cannot be greater than 126: changing to 126"
+      return 126
+    end
+
+    return n
+  end
+
   def self.parse_options(argv)
     options = {
       representations: [:character],
       format: :console,
-      starting: 32,
-      ending: 126,
+      start_at: 32,
+      end_at: 126,
     }
 
     parser = OptionParser.new do |opts|
@@ -138,10 +153,24 @@ class Configuration
       opts.on("--json", "JSON output") do
         options[:format] = :json
       end
+
+      opts.on("-s", "--start-at NUMBER", Integer, "Start ASCII list at NUMBER (base10): 32-126") do |n|
+        n = restrict_to_printable_ascii(n, "start")
+        options[:start_at] = n
+      end
+
+      opts.on("-e", "--end-at NUMBER", Integer, "End ASCII list at NUMBER (base10): 32-126") do |n|
+        n = restrict_to_printable_ascii(n, "end")
+        options[:end_at] = n
+      end
     end
 
     begin
       parser.parse!(argv)
+    rescue OptionParser::InvalidArgument => e
+      $stderr.puts e
+      $stderr.puts parser
+      exit 1
     rescue OptionParser::InvalidOption => e
       $stderr.puts e
       $stderr.puts parser
