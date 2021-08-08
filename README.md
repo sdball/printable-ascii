@@ -12,6 +12,18 @@ If you'd like to use Homebrew while addition to Homebrew is pending you can inst
 brew install --formula ./Formula/printable-ascii.rb
 ```
 
+# Docker
+
+There's a [printable-ascii docker repo](https://hub.docker.com/r/sdball/printable-ascii) up on docker hub.
+
+To run printable-ascii via Docker:
+
+```
+$ docker run sdball/printable-ascii
+
+$ docker run sdball/printable-ascii --json --decimal
+```
+
 # Usage
 
 Running `printable-ascii` by itself will simply print all the printable ASCII characters in plaintext to your console.
