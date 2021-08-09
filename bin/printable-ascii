@@ -188,12 +188,23 @@ class Configuration
       end
 
       opts.on("--range START-END", "Restrict the ASCII list to start-end. Can be supplied multiple times.") do |r|
-        (start, finish) = r.split("-")
+        if r.start_with? "-"
+          start = "-"
+          finish = r.gsub(/^-+/, "")
+        elsif r.end_with? "-"
+          finish = "-"
+          start = r.gsub(/-+$/, "")
+        else
+          (start, finish) = r.split("-")
+        end
+
         start = parse_start_end(start)
         finish = parse_start_end(finish)
+
         if start > finish
           $stderr.puts "#{r} parses as (#{start}-#{finish}) and outputs no characters because the start is greater than the end"
         end
+
         options[:ranges] << [start, finish]
       rescue NoMethodError
         raise OptionParser::InvalidArgument.new(r)
