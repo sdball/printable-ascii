@@ -222,6 +222,11 @@ class Configuration
         options[:ranges] << [97, 122]
       end
 
+      opts.on("--letters", "Show alphabetic characters. Added as a set of ranges") do
+        options[:ranges] << [65, 90]
+        options[:ranges] << [97, 122]
+      end
+
       opts.on("--numeric", "Show number characters. Added as a range") do
         options[:ranges] << [48, 57]
       end
