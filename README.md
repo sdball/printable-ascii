@@ -273,7 +273,7 @@ F
 Punctuation characters can be supplied for a range but must be quoted to ensure proper interpretation by both the script and your command line shell.
 
 ```
-$ printable-ascii --range "#"-"("
+$ printable-ascii --range "#-("
 #
 $
 %
