@@ -227,6 +227,14 @@ class Configuration
         options[:ranges] << [97, 122]
       end
 
+      opts.on("--uppercase", "Show uppercase alphabetic characters. Added as a range") do
+        options[:ranges] << [65, 90]
+      end
+
+      opts.on("--lowercase", "Show lowercase alphabetic characters. Added as a range") do
+        options[:ranges] << [97, 122]
+      end
+
       opts.on("--numeric", "Show number characters. Added as a range") do
         options[:ranges] << [48, 57]
       end
@@ -237,6 +245,19 @@ class Configuration
 
       opts.on("--space", "Show the space character. Fun fact: <tab> is not in the set of printable ASCII") do
         options[:ranges] << [32, 32]
+      end
+
+      opts.on("--binary-digits", "Show the binary digits. Added as a range") do
+        options[:ranges] << [48, 49]
+      end
+
+      opts.on("--octal-digits", "Show the octal digits. Added as a range") do
+        options[:ranges] << [48, 55]
+      end
+
+      opts.on("--hex-digits", "Show the hexadecimal digits. Added as a range") do
+        options[:ranges] << [48, 57]
+        options[:ranges] << [65, 70]
       end
     end
 
