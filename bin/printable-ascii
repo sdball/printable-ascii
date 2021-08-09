@@ -187,7 +187,7 @@ class Configuration
         options[:random] = n
       end
 
-      opts.on("--range START-END", "Restrict the ASCII list to start-end. Can be supplied multiple times. Supersedes --start-at and --end-at arguments.") do |r|
+      opts.on("--range START-END", "Restrict the ASCII list to start-end. Can be supplied multiple times.") do |r|
         (start, finish) = r.split("-")
         start = parse_start_end(start)
         finish = parse_start_end(finish)
