@@ -232,6 +232,10 @@ class Configuration
       $stderr.puts e
       $stderr.puts parser
       exit 1
+    rescue OptionParser::AmbiguousOption => e
+      $stderr.puts e
+      $stderr.puts parser
+      exit 1
     end
 
     massage_options(options)
