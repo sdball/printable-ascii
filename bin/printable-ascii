@@ -100,23 +100,19 @@ class PrintableAscii
 end
 
 class Configuration
-  def self.restrict_to_printable_ascii(n, context="")
-    context << " " if context != ""
+  def self.restrict_to_printable_ascii(n)
     if n < 32
-      $stderr.puts "#{context}cannot be less than 32: changing to 32"
-      return 32
+      raise OptionParser::InvalidArgument.new("#{n} is not a valid value")
     end
 
     if n > 126
-      $stderr.puts "#{context}cannot be greater than 126: changing to 126"
-      return 126
+      raise OptionParser::InvalidArgument.new("#{n} is not a valid value")
     end
 
     return n
   end
 
-  def self.parse_start_end(given, context="")
-    context << " " if context != ""
+  def self.parse_start_end(given)
     if given.length == 1 && given.ascii_only?
       given.ord
     else
@@ -125,7 +121,7 @@ class Configuration
       rescue ArgumentError
         raise OptionParser::InvalidArgument.new("#{given} is not a valid value")
       end
-      restrict_to_printable_ascii(given, context)
+      restrict_to_printable_ascii(given)
     end
   end
 
@@ -193,8 +189,11 @@ class Configuration
 
       opts.on("--range START-END", "Restrict the ASCII list to start-end. Can be supplied multiple times. Supersedes --start-at and --end-at arguments.") do |r|
         (start, finish) = r.split("-")
-        start = parse_start_end(start, "start of range")
-        finish = parse_start_end(finish, "end of range")
+        start = parse_start_end(start)
+        finish = parse_start_end(finish)
+        if start > finish
+          $stderr.puts "#{r} parses as (#{start}-#{finish}) and outputs no characters because the start is greater than the end"
+        end
         options[:ranges] << [start, finish]
       rescue NoMethodError
         raise OptionParser::InvalidArgument.new(r)
