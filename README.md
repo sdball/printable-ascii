@@ -199,7 +199,7 @@ $           36
 If you choose an end that's less than the start then you get no output.
 
 ```
-$ bin/printable-ascii --start-at 40 --end-at 35
+$ printable-ascii --start-at 40 --end-at 35
 ```
 
 ## Random
@@ -242,6 +242,86 @@ $ printable-ascii --start-at A --end-at F --json --random 10 | jq -c '.[]'
 {"character":"E"}
 {"character":"A"}
 {"character":"D"}
+```
+
+## Range
+
+The `--range` command line option allows specifying a range of printable ASCII as "start-end"
+
+```
+$ printable-ascii --range A-F
+A
+B
+C
+D
+E
+F
+```
+
+The start/end of the range can be in base10 or ASCII characters or a mix.
+
+```
+$ printable-ascii --range A-70
+A
+B
+C
+D
+E
+F
+```
+
+Punctuation characters can be supplied for a range but must be quoted to ensure proper interpretation by both the script and your command line shell.
+
+```
+$ printable-ascii --range "#"-"("
+#
+$
+%
+&
+'
+(
+```
+
+The `--range` option supersedes the `--start-at` and `--end-at` options, although the start-at and end-at options are still valid.
+
+```
+$ printable-ascii --range A-E --start-at C
+A
+B
+C
+D
+E
+```
+
+Multiple ranges can be provided
+
+```
+$ printable-ascii --range A-E --range v-z
+A
+B
+C
+D
+E
+v
+w
+x
+y
+z
+```
+
+Ranges can overlap and any overlapped characters will be listed twice
+
+```
+$ printable-ascii --range A-C --range A-F
+A
+B
+C
+A
+B
+C
+D
+E
+F
 ```
 
 # Full Output why not?
