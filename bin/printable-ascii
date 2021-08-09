@@ -209,6 +209,13 @@ class Configuration
       rescue NoMethodError
         raise OptionParser::InvalidArgument.new(r)
       end
+
+      opts.on("--punctuation", "Show punctuation characters. Added as a set of ranges") do
+        options[:ranges] << [32, 47]
+        options[:ranges] << [58, 64]
+        options[:ranges] << [91, 96]
+        options[:ranges] << [123, 126]
+      end
     end
 
     begin
