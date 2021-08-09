@@ -221,6 +221,18 @@ class Configuration
         options[:ranges] << [65, 90]
         options[:ranges] << [97, 122]
       end
+
+      opts.on("--numeric", "Show number characters. Added as a range") do
+        options[:ranges] << [48, 57]
+      end
+
+      opts.on("--digits", "Show number characters. Added as a range") do
+        options[:ranges] << [48, 57]
+      end
+
+      opts.on("--space", "Show the space character. Fun fact: <tab> is not in the set of printable ASCII") do
+        options[:ranges] << [32, 32]
+      end
     end
 
     begin
