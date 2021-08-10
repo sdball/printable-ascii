@@ -2,7 +2,7 @@
 
 Output all the printable ASCII characters in various representations and formats.
 
-![A printed table of ASCII characters with the printable characters highlighted](./printable-ascii.png)
+![A printed table of ASCII characters with the printable characters highlighted](./printable-ascii@0.5x.png)
 
 # Install
 
