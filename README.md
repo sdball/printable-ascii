@@ -16,14 +16,20 @@ brew install --formula ./Formula/printable-ascii.rb
 
 # Docker
 
-There's a [printable-ascii docker repo](https://hub.docker.com/r/sdball/printable-ascii) up on docker hub.
+There's a [printable-ascii docker repo on Docker Hub](https://hub.docker.com/r/sdball/printable-ascii) and a [printable-ascii container page on GitHub](https://github.com/sdball/printable-ascii/pkgs/container/printable-ascii). Both are the exact same images (linux/amd66 and linux/arm64) so use whichever you like.
 
-To run printable-ascii via Docker:
+## via Docker Hub
 
 ```
 $ docker run sdball/printable-ascii
-
 $ docker run sdball/printable-ascii --json --decimal
+```
+
+## via GitHub Container Registry
+
+```
+$ docker run ghcr.io/sdball/printable-ascii:latest
+$ docker run ghcr.io/sdball/printable-ascii:latest --json --decimal
 ```
 
 # Usage
@@ -50,7 +56,12 @@ Help is accessible with `-h` or `--help`
 
 ## Representations
 
-You can add additional representations of the characters with `-dbxo` as described in `--help`.
+You can add additional representations of the characters in the output.
+
+- `--binary` or `-b` to include the base-2 ASCII numbers of the characters
+- `--octal` or `-o` to include the base-8 ASCII numbers of the characters
+- `--decimal` or `-d` to include base-10 ASCII numbers of the characters
+- `--hex` or `-x` to include base-16 ASCII numbers of the characters
 
 ```
 $ printable-ascii --decimal --hex --binary | head
@@ -66,7 +77,7 @@ $           36        24            100100
 (           40        28            101000
 ```
 
-Fun fact, you can add as many duplicate representations as you want!
+Fun fact, you can add as many duplicate representations as you want! The order of your declarations will be preserved.
 
 ```
 $ printable-ascii -ooddxx --start-at 65 --end-at 71
@@ -78,6 +89,23 @@ D           104     104     68        68        44            44
 E           105     105     69        69        45            45
 F           106     106     70        70        46            46
 G           107     107     71        71        47            47
+```
+
+## Additional Representations
+
+You can also add metadata about the ASCII characters to the output data.
+
+- `--character-name` will include the official ASCII character names
+- `--info-url` will include a generated link to codepoints.net with more info about each specific character
+
+I checked almost a dozen "ASCII info" websites and codepoints.net was my favorite by a wide margin.
+
+```
+$ printable-ascii --character-name --info-url --range A-C
+CHARACTER   NAME                     INFO_URL
+A           LATIN CAPITAL LETTER A   https://codepoints.net/U+0041
+B           LATIN CAPITAL LETTER B   https://codepoints.net/U+0042
+C           LATIN CAPITAL LETTER C   https://codepoints.net/U+0043
 ```
 
 ## Header
@@ -326,105 +354,329 @@ E
 F
 ```
 
-# Full Output why not?
+Note: the output of `--range` declarations is NOT ASCII sorted. The ranges will appear in the order you define them.
+
+## Punctuation
+
+The `--punctuation` option will include the punctuation characters in the output. They're added as a range so can be combined with other ranges or character collections.
 
 ```
-$ printable-ascii --binary --octal --decimal --hexadecimal
-CHARACTER   BINARY   OCTAL   DECIMAL   HEXADECIMAL
-            100000   40      32        20
-!           100001   41      33        21
-"           100010   42      34        22
-#           100011   43      35        23
-$           100100   44      36        24
-%           100101   45      37        25
-&           100110   46      38        26
-'           100111   47      39        27
-(           101000   50      40        28
-)           101001   51      41        29
-*           101010   52      42        2a
-+           101011   53      43        2b
-,           101100   54      44        2c
--           101101   55      45        2d
-.           101110   56      46        2e
-/           101111   57      47        2f
-0           110000   60      48        30
-1           110001   61      49        31
-2           110010   62      50        32
-3           110011   63      51        33
-4           110100   64      52        34
-5           110101   65      53        35
-6           110110   66      54        36
-7           110111   67      55        37
-8           111000   70      56        38
-9           111001   71      57        39
-:           111010   72      58        3a
-;           111011   73      59        3b
-<           111100   74      60        3c
-=           111101   75      61        3d
->           111110   76      62        3e
-?           111111   77      63        3f
-@           1000000  100     64        40
-A           1000001  101     65        41
-B           1000010  102     66        42
-C           1000011  103     67        43
-D           1000100  104     68        44
-E           1000101  105     69        45
-F           1000110  106     70        46
-G           1000111  107     71        47
-H           1001000  110     72        48
-I           1001001  111     73        49
-J           1001010  112     74        4a
-K           1001011  113     75        4b
-L           1001100  114     76        4c
-M           1001101  115     77        4d
-N           1001110  116     78        4e
-O           1001111  117     79        4f
-P           1010000  120     80        50
-Q           1010001  121     81        51
-R           1010010  122     82        52
-S           1010011  123     83        53
-T           1010100  124     84        54
-U           1010101  125     85        55
-V           1010110  126     86        56
-W           1010111  127     87        57
-X           1011000  130     88        58
-Y           1011001  131     89        59
-Z           1011010  132     90        5a
-[           1011011  133     91        5b
-\           1011100  134     92        5c
-]           1011101  135     93        5d
-^           1011110  136     94        5e
-_           1011111  137     95        5f
-`           1100000  140     96        60
-a           1100001  141     97        61
-b           1100010  142     98        62
-c           1100011  143     99        63
-d           1100100  144     100       64
-e           1100101  145     101       65
-f           1100110  146     102       66
-g           1100111  147     103       67
-h           1101000  150     104       68
-i           1101001  151     105       69
-j           1101010  152     106       6a
-k           1101011  153     107       6b
-l           1101100  154     108       6c
-m           1101101  155     109       6d
-n           1101110  156     110       6e
-o           1101111  157     111       6f
-p           1110000  160     112       70
-q           1110001  161     113       71
-r           1110010  162     114       72
-s           1110011  163     115       73
-t           1110100  164     116       74
-u           1110101  165     117       75
-v           1110110  166     118       76
-w           1110111  167     119       77
-x           1111000  170     120       78
-y           1111001  171     121       79
-z           1111010  172     122       7a
-{           1111011  173     123       7b
-|           1111100  174     124       7c
-}           1111101  175     125       7d
-~           1111110  176     126       7e
+$ printable-ascii --punctuation
+ 
+!
+"
+#
+$
+%
+&
+'
+(
+)
+*
++
+,
+-
+.
+/
+:
+;
+<
+=
+>
+?
+@
+[
+\
+]
+^
+_
+`
+{
+|
+}
+~
+```
+
+```
+$ printable-ascii --punctuation --range A-C
+ 
+!
+"
+#
+$
+%
+&
+'
+(
+)
+*
++
+,
+-
+.
+/
+:
+;
+<
+=
+>
+?
+@
+[
+\
+]
+^
+_
+`
+{
+|
+}
+~
+A
+B
+C
+```
+
+## Alphabetic / Letters
+
+The `--alphabetic` option will include the alphabetic characters in the output. They're added as a range so can be combined with other ranges or character collections.
+
+The `--letters` option is the same as `--alphabetic`
+
+```
+$ printable-ascii --alphabetic
+A
+B
+C
+D
+E
+F
+G
+H
+I
+J
+K
+L
+M
+N
+O
+P
+Q
+R
+S
+T
+U
+V
+W
+X
+Y
+Z
+a
+b
+c
+d
+e
+f
+g
+h
+i
+j
+k
+l
+m
+n
+o
+p
+q
+r
+s
+t
+u
+v
+w
+x
+y
+z
+```
+
+## Space
+
+The `--space` option will include the only printable ASCII whitespace character in the output. It's added as a range so can be combined with other ranges or character collections.
+
+Fun fact! TAB is not actually in the set of printable ASCII but rather a control character.
+
+## Uppercase
+
+The `--uppercase` option will include the uppercase letters in the output. They're added as a range so can be combined with other ranges or character collections.
+
+## Lowercase
+
+The `--lowercase` option will include the lowercase letters in the output. They're added as a range so can be combined with other ranges or character collections.
+
+## Binary Digits
+
+The `--binary-digits` option will include the binary digits in the output. They're added as a range so can be combined with other ranges or character collections.
+
+```
+$ printable-ascii --binary-digits
+0
+1
+```
+
+This can be used a fun way to generate a lot of coin flips.
+
+```
+$ printable-ascii --binary-digits --random 10
+0
+1
+0
+1
+1
+1
+1
+1
+0
+0
+```
+
+## Octal Digits
+
+The `--octal-digits` option will include the octal digits in the output. They're added as a range so can be combined with other ranges or character collections.
+
+```
+$ printable-ascii --octal-digits
+0
+1
+2
+3
+4
+5
+6
+7
+```
+
+## Hex Digits
+
+The `--hex-digits` option will include the hexadecimal digits in the output. They're added as a range so can be combined with other ranges or character collections.
+
+```
+$ printable-ascii --hex-digits
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+A
+B
+C
+D
+E
+F
+```
+
+# All the printable ASCII why not?
+
+```
+CHARACTER   BINARY   OCTAL   DECIMAL   HEXADECIMAL   NAME
+            100000   40      32        20            SPACE
+!           100001   41      33        21            EXCLAMATION MARK
+"           100010   42      34        22            QUOTATION MARK
+#           100011   43      35        23            NUMBER SIGN
+$           100100   44      36        24            DOLLAR SIGN
+%           100101   45      37        25            PERCENT SIGN
+&           100110   46      38        26            AMPERSAND
+'           100111   47      39        27            APOSTROPHE
+(           101000   50      40        28            LEFT PARENTHESIS
+)           101001   51      41        29            RIGHT PARENTHESIS
+*           101010   52      42        2a            ASTERISK
++           101011   53      43        2b            PLUS SIGN
+,           101100   54      44        2c            COMMA
+-           101101   55      45        2d            HYPHEN-MINUS
+.           101110   56      46        2e            FULL STOP
+/           101111   57      47        2f            SOLIDUS
+0           110000   60      48        30            DIGIT ZERO
+1           110001   61      49        31            DIGIT ONE
+2           110010   62      50        32            DIGIT TWO
+3           110011   63      51        33            DIGIT THREE
+4           110100   64      52        34            DIGIT FOUR
+5           110101   65      53        35            DIGIT FIVE
+6           110110   66      54        36            DIGIT SIX
+7           110111   67      55        37            DIGIT SEVEN
+8           111000   70      56        38            DIGIT EIGHT
+9           111001   71      57        39            DIGIT NINE
+:           111010   72      58        3a            COLON
+;           111011   73      59        3b            SEMICOLON
+<           111100   74      60        3c            LESS-THAN SIGN
+=           111101   75      61        3d            EQUALS SIGN
+>           111110   76      62        3e            GREATER-THAN SIGN
+?           111111   77      63        3f            QUESTION MARK
+@           1000000  100     64        40            COMMERCIAL AT
+A           1000001  101     65        41            LATIN CAPITAL LETTER A
+B           1000010  102     66        42            LATIN CAPITAL LETTER B
+C           1000011  103     67        43            LATIN CAPITAL LETTER C
+D           1000100  104     68        44            LATIN CAPITAL LETTER D
+E           1000101  105     69        45            LATIN CAPITAL LETTER E
+F           1000110  106     70        46            LATIN CAPITAL LETTER F
+G           1000111  107     71        47            LATIN CAPITAL LETTER G
+H           1001000  110     72        48            LATIN CAPITAL LETTER H
+I           1001001  111     73        49            LATIN CAPITAL LETTER I
+J           1001010  112     74        4a            LATIN CAPITAL LETTER J
+K           1001011  113     75        4b            LATIN CAPITAL LETTER K
+L           1001100  114     76        4c            LATIN CAPITAL LETTER L
+M           1001101  115     77        4d            LATIN CAPITAL LETTER M
+N           1001110  116     78        4e            LATIN CAPITAL LETTER N
+O           1001111  117     79        4f            LATIN CAPITAL LETTER O
+P           1010000  120     80        50            LATIN CAPITAL LETTER P
+Q           1010001  121     81        51            LATIN CAPITAL LETTER Q
+R           1010010  122     82        52            LATIN CAPITAL LETTER R
+S           1010011  123     83        53            LATIN CAPITAL LETTER S
+T           1010100  124     84        54            LATIN CAPITAL LETTER T
+U           1010101  125     85        55            LATIN CAPITAL LETTER U
+V           1010110  126     86        56            LATIN CAPITAL LETTER V
+W           1010111  127     87        57            LATIN CAPITAL LETTER W
+X           1011000  130     88        58            LATIN CAPITAL LETTER X
+Y           1011001  131     89        59            LATIN CAPITAL LETTER Y
+Z           1011010  132     90        5a            LATIN CAPITAL LETTER Z
+[           1011011  133     91        5b            LEFT SQUARE BRACKET
+\           1011100  134     92        5c            REVERSE SOLIDUS
+]           1011101  135     93        5d            RIGHT SQUARE BRACKET
+^           1011110  136     94        5e            CIRCUMFLEX ACCENT
+_           1011111  137     95        5f            LOW LINE
+`           1100000  140     96        60            GRAVE ACCENT
+a           1100001  141     97        61            LATIN SMALL LETTER A
+b           1100010  142     98        62            LATIN SMALL LETTER B
+c           1100011  143     99        63            LATIN SMALL LETTER C
+d           1100100  144     100       64            LATIN SMALL LETTER D
+e           1100101  145     101       65            LATIN SMALL LETTER E
+f           1100110  146     102       66            LATIN SMALL LETTER F
+g           1100111  147     103       67            LATIN SMALL LETTER G
+h           1101000  150     104       68            LATIN SMALL LETTER H
+i           1101001  151     105       69            LATIN SMALL LETTER I
+j           1101010  152     106       6a            LATIN SMALL LETTER J
+k           1101011  153     107       6b            LATIN SMALL LETTER K
+l           1101100  154     108       6c            LATIN SMALL LETTER L
+m           1101101  155     109       6d            LATIN SMALL LETTER M
+n           1101110  156     110       6e            LATIN SMALL LETTER N
+o           1101111  157     111       6f            LATIN SMALL LETTER O
+p           1110000  160     112       70            LATIN SMALL LETTER P
+q           1110001  161     113       71            LATIN SMALL LETTER Q
+r           1110010  162     114       72            LATIN SMALL LETTER R
+s           1110011  163     115       73            LATIN SMALL LETTER S
+t           1110100  164     116       74            LATIN SMALL LETTER T
+u           1110101  165     117       75            LATIN SMALL LETTER U
+v           1110110  166     118       76            LATIN SMALL LETTER V
+w           1110111  167     119       77            LATIN SMALL LETTER W
+x           1111000  170     120       78            LATIN SMALL LETTER X
+y           1111001  171     121       79            LATIN SMALL LETTER Y
+z           1111010  172     122       7a            LATIN SMALL LETTER Z
+{           1111011  173     123       7b            LEFT CURLY BRACKET
+|           1111100  174     124       7c            VERTICAL LINE
+}           1111101  175     125       7d            RIGHT CURLY BRACKET
+~           1111110  176     126       7e            TILDE
 ```
 
