@@ -356,174 +356,23 @@ F
 
 Note: the output of `--range` declarations is NOT ASCII sorted. The ranges will appear in the order you define them.
 
-## Punctuation
+## Named Ranges
 
-The `--punctuation` option will include the punctuation characters in the output. They're added as a range so can be combined with other ranges or character collections.
+## Named Ranges
 
-```
-$ printable-ascii --punctuation
- 
-!
-"
-#
-$
-%
-&
-'
-(
-)
-*
-+
-,
--
-.
-/
-:
-;
-<
-=
->
-?
-@
-[
-\
-]
-^
-_
-`
-{
-|
-}
-~
-```
+Each of these options adds the specified characters as a `--range` option. They can be combined with each other and other `--range` declarations.
 
-```
-$ printable-ascii --punctuation --range A-C
- 
-!
-"
-#
-$
-%
-&
-'
-(
-)
-*
-+
-,
--
-.
-/
-:
-;
-<
-=
->
-?
-@
-[
-\
-]
-^
-_
-`
-{
-|
-}
-~
-A
-B
-C
-```
+- `--punctuation`: all the punctuation characters
+- `--alphabetic` / `--letters`: all the letter characters
+- `--uppercase`: all the uppercase letters
+- `--lowercase`: all the lowercase letters
+- `--numeric` / `--digits`: all the numbers
+- `--space`: THE space character (fun fact: tab is not in the set of printable ASCII)
+- `--binary-digits`: the binary digits
+- `--octal-digits`: the octal digits
+- `--hex-digits`: the hex digits
 
-## Alphabetic / Letters
-
-The `--alphabetic` option will include the alphabetic characters in the output. They're added as a range so can be combined with other ranges or character collections.
-
-The `--letters` option is the same as `--alphabetic`
-
-```
-$ printable-ascii --alphabetic
-A
-B
-C
-D
-E
-F
-G
-H
-I
-J
-K
-L
-M
-N
-O
-P
-Q
-R
-S
-T
-U
-V
-W
-X
-Y
-Z
-a
-b
-c
-d
-e
-f
-g
-h
-i
-j
-k
-l
-m
-n
-o
-p
-q
-r
-s
-t
-u
-v
-w
-x
-y
-z
-```
-
-## Space
-
-The `--space` option will include the only printable ASCII whitespace character in the output. It's added as a range so can be combined with other ranges or character collections.
-
-Fun fact! TAB is not actually in the set of printable ASCII but rather a control character.
-
-## Uppercase
-
-The `--uppercase` option will include the uppercase letters in the output. They're added as a range so can be combined with other ranges or character collections.
-
-## Lowercase
-
-The `--lowercase` option will include the lowercase letters in the output. They're added as a range so can be combined with other ranges or character collections.
-
-## Binary Digits
-
-The `--binary-digits` option will include the binary digits in the output. They're added as a range so can be combined with other ranges or character collections.
-
-```
-$ printable-ascii --binary-digits
-0
-1
-```
-
-This can be used a fun way to generate a lot of coin flips.
+The `--binary-digits` can be used a fun way to generate a lot of coin flips.
 
 ```
 $ printable-ascii --binary-digits --random 10
@@ -539,44 +388,12 @@ $ printable-ascii --binary-digits --random 10
 0
 ```
 
-## Octal Digits
-
-The `--octal-digits` option will include the octal digits in the output. They're added as a range so can be combined with other ranges or character collections.
+Like a LOT of coin flips. Not _blazing_ speed but 3.5 seconds for a million isn't too bad! Hooray for lazy enumerators.
 
 ```
-$ printable-ascii --octal-digits
-0
-1
-2
-3
-4
-5
-6
-7
-```
+$ printable-ascii --binary-digits --random 1000000
 
-## Hex Digits
-
-The `--hex-digits` option will include the hexadecimal digits in the output. They're added as a range so can be combined with other ranges or character collections.
-
-```
-$ printable-ascii --hex-digits
-0
-1
-2
-3
-4
-5
-6
-7
-8
-9
-A
-B
-C
-D
-E
-F
+0.76s user 0.41s system 32% cpu 3.540 total
 ```
 
 # All the printable ASCII why not?
