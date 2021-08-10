@@ -25,8 +25,7 @@ end
 class ConsoleOutput
   def self.output(options, header, ascii)
     header_string = header.reduce("") do |result, element|
-      spacing = element == "NAME" ? 25 : element.length + 3
-      result << element.ljust(spacing)
+      result << element.ljust(spacing(element))
     end
     puts header_string.strip if options[:header]
     ascii.each do |row|
@@ -35,11 +34,21 @@ class ConsoleOutput
         if index == options[:representations].length - 1
           row_string << row[representation]
         else
-          spacing = representation == :name ? 25 : representation.length + 3
-          row_string << row[representation].ljust(spacing)
+          row_string << row[representation].ljust(spacing(representation))
         end
       end
       puts row_string
+    end
+  end
+
+  def self.spacing(element)
+    case element.to_s.downcase
+    when "name"
+      22 + 3
+    when "info_url"
+      29 + 3
+    else
+      element.length + 3
     end
   end
 end
@@ -97,6 +106,8 @@ class PrintableAscii
       sprintf("%x", number)
     when :name
       CHARACTER_NAME.fetch(number, number)
+    when :info_url
+      "https://codepoints.net/U+00#{sprintf("%x", number)}"
     else
       "#{representation} is an unknown format"
     end
@@ -167,6 +178,10 @@ class Configuration
 
       opts.on("--character-name", "Output character name") do
         options[:representations] << :name
+      end
+
+      opts.on("--info-url", "Include a URL with further character details") do
+        options[:representations] << :info_url
       end
 
       opts.on("--header", "Include the header in output") do
