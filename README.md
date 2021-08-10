@@ -274,7 +274,7 @@ $ printable-ascii --start-at A --end-at F --json --random 10 | jq -c '.[]'
 {"character":"D"}
 ```
 
-## Range
+## Ranges
 
 The `--range` command line option allows specifying a range of printable ASCII as "start-end"
 
