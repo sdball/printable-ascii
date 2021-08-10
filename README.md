@@ -2,6 +2,8 @@
 
 Output all the printable ASCII characters in various representations and formats.
 
+![A printed table of ASCII characters with the printable characters highlighted](./printable-ascii.png)
+
 # Install
 
 Get `bin/printable-ascii` into your `$PATH` however you like.
