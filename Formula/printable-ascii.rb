@@ -1,8 +1,8 @@
 class PrintableAscii < Formula
   desc "Output all printable ASCII characters in various representations and formats"
   homepage "https://github.com/sdball/printable-ascii"
-  url "https://github.com/sdball/printable-ascii/archive/refs/tags/v2.1.0.tar.gz"
-  sha256 "cf0b2dfa7c1e0eb851be312c3e53d4f67ad68d46c58d8983f61afeb56588b061"
+  url "https://github.com/sdball/printable-ascii/archive/refs/tags/v2.4.0.tar.gz"
+  sha256 "984352328470cf082f0d32c5aab63b73559b5b1e9d1672fafdaf081dd58a00da"
   license "MIT"
 
   def install
