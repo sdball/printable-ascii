@@ -176,7 +176,11 @@ class Configuration
         options[:representations] << :octal
       end
 
-      opts.on("--character-name", "Output character name") do
+      opts.on("--character-name", "Output character name (same as --name)") do
+        options[:representations] << :name
+      end
+
+      opts.on("--name", "Output character name (same as --character-name)") do
         options[:representations] << :name
       end
 
@@ -258,11 +262,11 @@ class Configuration
         options[:ranges] << [97, 122]
       end
 
-      opts.on("--numeric", "Show number characters. Added as a range") do
+      opts.on("--numeric", "Show number characters. Added as a range (same as --digits)") do
         options[:ranges] << [48, 57]
       end
 
-      opts.on("--digits", "Show number characters. Added as a range") do
+      opts.on("--digits", "Show number characters. Added as a range (same as --numeric)") do
         options[:ranges] << [48, 57]
       end
 

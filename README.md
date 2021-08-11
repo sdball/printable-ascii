@@ -95,7 +95,7 @@ G           107     107     71        71        47            47
 
 You can also add metadata about the ASCII characters to the output data.
 
-- `--character-name` will include the official ASCII character names
+- `--character-name` (or `--name`) will include the official ASCII character names
 - `--info-url` will include a generated link to codepoints.net with more info about each specific character
 
 I checked almost a dozen "ASCII info" websites and codepoints.net was my favorite by a wide margin.
