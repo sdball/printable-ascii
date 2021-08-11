@@ -9,6 +9,10 @@ class Output
       JsonOutput
     when :console
       ConsoleOutput
+    when :compact
+      CompactOutput
+    when :compact_json
+      CompactJsonOutput
     else
       ConsoleOutput
     end
@@ -19,6 +23,21 @@ class JsonOutput
   def self.output(options, header, ascii)
     require 'json'
     puts ascii.to_a.to_json
+  end
+end
+
+class CompactOutput
+  def self.output(options, header, ascii)
+    ascii.each do |row|
+      print row[:character]
+    end
+  end
+end
+
+class CompactJsonOutput
+  def self.output(options, header, ascii)
+    require 'json'
+    puts ascii.map { |c| c[:character] }.to_a.to_json
   end
 end
 
@@ -197,7 +216,19 @@ class Configuration
       end
 
       opts.on("--json", "JSON output") do
-        options[:format] = :json
+        if options[:format] == :compact
+          options[:format] = :compact_json
+        else
+          options[:format] = :json
+        end
+      end
+
+      opts.on("--compact", "Compact output (only the characters, no newlines). Can be combined with --json") do
+        if options[:format] == :json
+          options[:format] = :compact_json
+        else
+          options[:format] = :compact
+        end
       end
 
       opts.on("-s", "--start-at NUMBER|ASCII", "Start ASCII list at base10 NUMBER (32-126) or ASCII character") do |given|
