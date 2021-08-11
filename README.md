@@ -164,6 +164,46 @@ $ printable-ascii --decimal --hex --binary --json | jq -c '.[]' | head
 {"character":")","decimal":"41","hexadecimal":"29","binary":"101001"}
 ```
 
+## Compact
+
+Compact output is available with `--compact`
+
+On its own `--compact` only prints the ASCII characters without newlines.
+
+```
+$ printable-ascii --binary-digits
+0
+1
+```
+
+```
+$ printable-ascii --binary-digits --compact
+01%
+```
+
+```
+$ printable-ascii --binary-digits --json
+[{"character":"0"},{"character":"1"}]
+```
+
+```
+$ printable-ascii --binary-digits --json --compact
+["0","1"]
+```
+
+This can be used for all sorts of fun output. Like random HEX colors
+
+```
+$ printable-ascii --hex-digits --random 6 --compact
+FADD5A%
+
+$ printable-ascii --hex-digits --random 6 --compact
+341349%
+
+$ printable-ascii --hex-digits --random 6 --compact
+B033A5%
+```
+
 ## Start and End
 
 You can start/end the output at any ASCII integer within the printable range in base10 (32-126) or at any single ASCII character.
