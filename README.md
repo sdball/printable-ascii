@@ -16,7 +16,7 @@ brew install --formula ./Formula/printable-ascii.rb
 
 # Docker
 
-There's a [printable-ascii docker repo on Docker Hub](https://hub.docker.com/r/sdball/printable-ascii) and a [printable-ascii container page on GitHub](https://github.com/sdball/printable-ascii/pkgs/container/printable-ascii). Both are the exact same images (linux/amd66 and linux/arm64) so use whichever you like.
+There's a [printable-ascii docker repo on Docker Hub](https://hub.docker.com/r/sdball/printable-ascii) and a [printable-ascii container page on GitHub](https://github.com/sdball/printable-ascii/pkgs/container/printable-ascii). Both are the exact same images (linux/amd64 and linux/arm64) so use whichever you like.
 
 ## via Docker Hub
 
