@@ -38,7 +38,7 @@ end
 class CompactJsonOutput
   def self.output(options, header, ascii)
     require 'json'
-    puts ascii.map { |c| c[:character] }.to_a.to_json
+    puts [ascii.map { |c| c[:character] }.to_a.join].to_json
   end
 end
 
