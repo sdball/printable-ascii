@@ -168,18 +168,26 @@ $ printable-ascii --decimal --hex --binary --json | jq -c '.[]' | head
 
 Compact output is available with `--compact`
 
-On its own `--compact` only prints the ASCII characters without newlines.
+On its own `--compact` prints the characters as a single line.
 
 ```
-$ printable-ascii --binary-digits
+$ printable-ascii --octal-digits
 0
 1
+2
+3
+4
+5
+6
+7
 ```
 
 ```
 $ printable-ascii --binary-digits --compact
-01%
+01234567
 ```
+
+When combined with `--json` then `--compact` prints the characters as a combined string in an array.
 
 ```
 $ printable-ascii --binary-digits --json
@@ -188,21 +196,23 @@ $ printable-ascii --binary-digits --json
 
 ```
 $ printable-ascii --binary-digits --json --compact
-["0","1"]
+["01"]
 ```
 
-This can be used for all sorts of fun output. Like random HEX colors
+This can be used for all sorts of fun output. Like random HEX colors.
 
 ```
 $ printable-ascii --hex-digits --random 6 --compact
-FADD5A%
+FADD5A
 
 $ printable-ascii --hex-digits --random 6 --compact
-341349%
+341349
 
 $ printable-ascii --hex-digits --random 6 --compact
-B033A5%
+B033A5
 ```
+
+That same output is also available as a shortcut `--hex-color`
 
 ## Start and End
 
