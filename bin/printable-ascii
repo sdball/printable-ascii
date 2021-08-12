@@ -135,11 +135,11 @@ end
 
 class Configuration
   def self.restrict_to_printable_ascii(n)
-    if n < 32
+    if n < ASCII_START
       raise OptionParser::InvalidArgument.new("#{n} is not a valid value")
     end
 
-    if n > 126
+    if n > ASCII_END
       raise OptionParser::InvalidArgument.new("#{n} is not a valid value")
     end
 
@@ -231,12 +231,12 @@ class Configuration
         end
       end
 
-      opts.on("-s", "--start-at NUMBER|ASCII", "Start ASCII list at base10 NUMBER (32-126) or ASCII character") do |given|
+      opts.on("-s", "--start-at NUMBER|ASCII", "Start ASCII list at base10 NUMBER (#{ASCII_START}-#{ASCII_END}) or ASCII character") do |given|
         start_at = parse_start_end(given)
         options[:start_at] = start_at
       end
 
-      opts.on("-e", "--end-at NUMBER|ASCII", "End ASCII list at base10 NUMBER (32-126) or ASCII character") do |given|
+      opts.on("-e", "--end-at NUMBER|ASCII", "End ASCII list at base10 NUMBER (#{ASCII_START}-#{ASCII_END}) or ASCII character") do |given|
         end_at = parse_start_end(given)
         options[:end_at] = end_at
       end
@@ -269,53 +269,47 @@ class Configuration
       end
 
       opts.on("--punctuation", "Show punctuation characters. Added as a set of ranges") do
-        options[:ranges] << [32, 47]
-        options[:ranges] << [58, 64]
-        options[:ranges] << [91, 96]
-        options[:ranges] << [123, 126]
+        options[:ranges].concat(PUNCTUATION)
       end
 
       opts.on("--alphabetic", "Show alphabetic characters. Added as a set of ranges") do
-        options[:ranges] << [65, 90]
-        options[:ranges] << [97, 122]
+        options[:ranges].concat(UPPERCASE, LOWERCASE)
       end
 
       opts.on("--letters", "Show alphabetic characters. Added as a set of ranges") do
-        options[:ranges] << [65, 90]
-        options[:ranges] << [97, 122]
+        options[:ranges].concat(UPPERCASE, LOWERCASE)
       end
 
       opts.on("--uppercase", "Show uppercase alphabetic characters. Added as a range") do
-        options[:ranges] << [65, 90]
+        options[:ranges].concat(UPPERCASE)
       end
 
       opts.on("--lowercase", "Show lowercase alphabetic characters. Added as a range") do
-        options[:ranges] << [97, 122]
+        options[:ranges].concat(LOWERCASE)
       end
 
       opts.on("--numeric", "Show number characters. Added as a range (same as --digits)") do
-        options[:ranges] << [48, 57]
+        options[:ranges].concat(NUMERIC)
       end
 
       opts.on("--digits", "Show number characters. Added as a range (same as --numeric)") do
-        options[:ranges] << [48, 57]
+        options[:ranges].concat(NUMERIC)
       end
 
       opts.on("--space", "Show the space character. Fun fact: <tab> is not in the set of printable ASCII") do
-        options[:ranges] << [32, 32]
+        options[:ranges].concat(SPACE)
       end
 
       opts.on("--binary-digits", "Show the binary digits. Added as a range") do
-        options[:ranges] << [48, 49]
+        options[:ranges].concat(BINARY_DIGITS)
       end
 
       opts.on("--octal-digits", "Show the octal digits. Added as a range") do
-        options[:ranges] << [48, 55]
+        options[:ranges].concat(OCTAL_DIGITS)
       end
 
       opts.on("--hex-digits", "Show the hexadecimal digits. Added as a range") do
-        options[:ranges] << [48, 57]
-        options[:ranges] << [65, 70]
+        options[:ranges].concat(HEX_DIGITS)
       end
     end
 
@@ -353,14 +347,53 @@ class Configuration
     end
 
     if options[:ranges].length == 0
-      start_at = options[:start_at] ? options[:start_at] : 32
-      end_at = options[:end_at] ? options[:end_at] : 126
+      start_at = options[:start_at] ? options[:start_at] : ASCII_START
+      end_at = options[:end_at] ? options[:end_at] : ASCII_END
       options[:ranges] << [start_at, end_at]
     end
 
     options
   end
 end
+
+ASCII_START = 32
+ASCII_END = 126
+
+PUNCTUATION = [
+  [32, 47],
+  [58, 64],
+  [91, 96],
+  [123, 126],
+]
+
+UPPERCASE = [
+  [65, 90],
+]
+
+LOWERCASE = [
+  [97, 122],
+]
+
+SPACE = [
+  [32, 32],
+]
+
+NUMERIC = [
+  [48, 57],
+]
+
+BINARY_DIGITS = [
+  [48, 49],
+]
+
+OCTAL_DIGITS = [
+  [48, 55],
+]
+
+HEX_DIGITS = [
+  [48, 57],
+  [65, 70],
+]
 
 CHARACTER_NAME = {
   32 => "SPACE",
