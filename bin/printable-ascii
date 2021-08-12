@@ -17,28 +17,44 @@ class Output
       ConsoleOutput
     end
   end
-end
 
-class JsonOutput
-  def self.output(options, header, ascii)
-    require 'json'
-    puts ascii.to_a.to_json
-  end
-end
-
-class CompactOutput
-  def self.output(options, header, ascii)
-    ascii.each do |row|
-      print row[:character]
+  def self.enumerator(ascii, random)
+    if random
+      ascii.each.take(random)
+    else
+      ascii.each
     end
-    print "\n"
   end
 end
 
-class CompactJsonOutput
+class JsonOutput < Output
   def self.output(options, header, ascii)
     require 'json'
-    puts [ascii.map { |c| c[:character] }.to_a.join].to_json
+    output = options[:times].times.map do
+      enumerator(ascii, options[:random]).to_a
+    end
+    puts output.to_json
+  end
+end
+
+class CompactOutput < Output
+  def self.output(options, header, ascii)
+    options[:times].times do
+      enumerator(ascii, options[:random]).each do |row|
+        print row[:character]
+      end
+      print "\n"
+    end
+  end
+end
+
+class CompactJsonOutput < Output
+  def self.output(options, header, ascii)
+    require 'json'
+    output = options[:times].times.map do
+      enumerator(ascii, options[:random]).map { |c| c[:character] }.to_a.join
+    end
+    puts output.to_json
   end
 end
 
@@ -48,16 +64,23 @@ class ConsoleOutput
       result << element.ljust(spacing(element))
     end
     puts header_string.strip if options[:header]
-    ascii.each do |row|
-      row_string = ""
-      options[:representations].each_with_index do |representation, index|
-        if index == options[:representations].length - 1
-          row_string << row[representation]
-        else
-          row_string << row[representation].ljust(spacing(representation))
+    options[:times].times do
+      enumerator = if options[:random]
+                     ascii.each.take(options[:random])
+                   else
+                     ascii.each
+                   end
+      enumerator.each do |row|
+        row_string = ""
+        options[:representations].each_with_index do |representation, index|
+          if index == options[:representations].length - 1
+            row_string << row[representation]
+          else
+            row_string << row[representation].ljust(spacing(representation))
+          end
         end
+        puts row_string
       end
-      puts row_string
     end
   end
 
@@ -109,7 +132,7 @@ class PrintableAscii
       loop {
         e << list.sample
       }
-    end.take(count).lazy
+    end.lazy
   end
 
   def format(number, representation)
@@ -165,6 +188,8 @@ class Configuration
       representations: [:character],
       format: :console,
       ranges: [],
+      times: 1,
+      random: false,
     }
 
     parser = OptionParser.new do |opts|
@@ -315,6 +340,10 @@ class Configuration
 
       opts.on("--hex-color", "Output a random HEX color.") do
         options[:hexcolor] = true
+      end
+
+      opts.on("--times NUMBER", Integer, "Repeat the requested output NUMBER times") do |number|
+        options[:times] = number
       end
     end
 
