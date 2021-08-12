@@ -151,7 +151,7 @@ The header declarations have no effect on the JSON output.
 JSON output is available with `--json`
 
 ```
-$ printable-ascii --decimal --hex --binary --json | jq -c '.[]' | head
+$ printable-ascii --decimal --hexadecimal --binary --json | jq -c '.[][]' | head
 {"character":" ","decimal":"32","hexadecimal":"20","binary":"100000"}
 {"character":"!","decimal":"33","hexadecimal":"21","binary":"100001"}
 {"character":"\"","decimal":"34","hexadecimal":"22","binary":"100010"}
@@ -191,7 +191,7 @@ When combined with `--json` then `--compact` prints the characters as a combined
 
 ```
 $ printable-ascii --binary-digits --json
-[{"character":"0"},{"character":"1"}]
+[[{"character":"0"},{"character":"1"}]]
 ```
 
 ```
@@ -311,17 +311,17 @@ B
 ```
 
 ```
-$ printable-ascii --start-at A --end-at F --json --random 10 | jq -c '.[]'
+$ printable-ascii --start-at A --end-at F --json --random 10 | jq -c '.[][]'
+{"character":"C"}
+{"character":"C"}
 {"character":"F"}
 {"character":"B"}
-{"character":"B"}
-{"character":"B"}
-{"character":"E"}
+{"character":"C"}
 {"character":"F"}
-{"character":"E"}
-{"character":"E"}
 {"character":"A"}
+{"character":"B"}
 {"character":"D"}
+{"character":"C"}
 ```
 
 ## Ranges
@@ -451,6 +451,86 @@ $ printable-ascii --binary-digits --random 1000000
 These options are quick ways to write combinations of options.
 
 - `--hex-color`: Output a random HEX color code. (`--hex-digits --random 6 --compact`)
+
+```
+$ printable-ascii --hex-color
+AE0F60
+```
+
+## Times
+
+The `--times NUMBER` option allows repeating the requested pattern `NUMBER` of times.
+
+For example: `--hex-color --times 5` will output 5 random hex colors.
+
+```
+$ printable-ascii --hex-color --times 5
+6B47F6
+9365B0
+55676F
+A7DB92
+1EC851
+```
+
+The repeating data does the sensible thing for each type of output.
+
+### Console
+
+```
+$ printable-ascii --hex-digits --random 2
+C
+7
+
+$ printable-ascii --hex-digits --random 2 --times 3
+B
+4
+0
+8
+5
+5
+```
+
+### Compact Console
+
+```
+$ printable-ascii --hex-digits --random 2 --compact
+9A
+```
+
+```
+$ printable-ascii --hex-digits --random 2 --times 3 --compact
+A3
+82
+20
+```
+
+### JSON
+
+```
+$ printable-ascii --hex-digits --random 2 --json | jq -c '.[]'
+[{"character":"C"},{"character":"B"}]
+```
+
+```
+$ printable-ascii --hex-digits --random 2 --json --times 3 | jq -c '.[]'
+[{"character":"A"},{"character":"0"}]
+[{"character":"2"},{"character":"D"}]
+[{"character":"1"},{"character":"4"}]
+```
+
+### Compact JSON
+
+```
+$ ./bin/printable-ascii --hex-digits --random 2 --json --compact | jq -c '.[]'
+"A0"
+```
+
+```
+$ ./bin/printable-ascii --hex-digits --random 2 --json --compact --times 3 | jq -c '.[]'
+"B0"
+"D9"
+"BC"
+```
 
 # All the printable ASCII why not?
 
