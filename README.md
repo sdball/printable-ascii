@@ -436,6 +436,12 @@ $ printable-ascii --binary-digits --random 1000000
 0.76s user 0.41s system 32% cpu 3.540 total
 ```
 
+## Shorthands
+
+These options are quick ways to write combinations of options.
+
+- `--hex-color`: Output a random HEX color code. (`--hex-digits --random 6 --compact`)
+
 # All the printable ASCII why not?
 
 ```
