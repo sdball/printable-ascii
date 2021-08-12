@@ -311,6 +311,10 @@ class Configuration
       opts.on("--hex-digits", "Show the hexadecimal digits. Added as a range") do
         options[:ranges].concat(HEX_DIGITS)
       end
+
+      opts.on("--hex-color", "Output a random HEX color.") do
+        options[:hexcolor] = true
+      end
     end
 
     begin
@@ -344,6 +348,12 @@ class Configuration
     if options[:ranges].length > 0
       $stderr.puts "--start-at is ignored if --range is given" if ! options[:start_at].nil?
       $stderr.puts "--end-at is ignored if --range is given" if ! options[:end_at].nil?
+    end
+
+    if options[:hexcolor]
+      options[:ranges].concat(HEX_DIGITS)
+      options[:random] = 6
+      options[:format] = options[:format] == :json ? :compact_json : :compact
     end
 
     if options[:ranges].length == 0
