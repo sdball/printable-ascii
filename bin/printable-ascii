@@ -31,6 +31,7 @@ class CompactOutput
     ascii.each do |row|
       print row[:character]
     end
+    print "\n"
   end
 end
 
