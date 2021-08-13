@@ -353,6 +353,10 @@ class Configuration
         options[:ranges].concat(HEX_DIGITS)
       end
 
+      opts.on("--morse", "Morse code characters. Added as a range") do
+        options[:ranges].concat(MORSE)
+      end
+
       opts.on("--hex-color", "Output a random HEX color") do
         options[:hexcolor] = true
       end
@@ -448,6 +452,11 @@ OCTAL_DIGITS = [
 HEX_DIGITS = [
   [48, 57],
   [65, 70],
+]
+
+MORSE = [
+  [32, 32],
+  [45, 46],
 ]
 
 CHARACTER_NAME = {
