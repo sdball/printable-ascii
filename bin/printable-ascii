@@ -353,7 +353,7 @@ class Configuration
         options[:ranges].concat(HEX_DIGITS)
       end
 
-      opts.on("--hex-color", "Output a random HEX color.") do
+      opts.on("--hex-color", "Output a random HEX color") do
         options[:hexcolor] = true
       end
 
