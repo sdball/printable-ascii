@@ -187,6 +187,7 @@ class Configuration
     return "45-45" if range == "---"
     return range.sub(/^--/, "45-") if range.start_with? "--"
     return range.sub(/--$/, "-45") if range.end_with? "--"
+    range
   end
 
   def self.massage_argv(argv)
