@@ -183,7 +183,22 @@ class Configuration
     end
   end
 
+  def self.massage_range(range)
+    return "45-45" if range == "---"
+    return range.sub(/^--/, "45-") if range.start_with? "--"
+    return range.sub(/--$/, "-45") if range.end_with? "--"
+  end
+
+  def self.massage_argv(argv)
+    argv.each_with_index do |element, index|
+      if element == "--range"
+        argv[index + 1] = massage_range(argv[index + 1])
+      end
+    end
+  end
+
   def self.parse_options(argv)
+    argv = massage_argv(argv)
     options = {
       representations: [:character],
       format: :console,
