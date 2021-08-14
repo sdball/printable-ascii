@@ -10,13 +10,15 @@ Or, given STDIN, filter the STDIN text to the specified printable ASCII characte
 
 Get `bin/printable-ascii` into your `$PATH` however you like.
 
-If you'd like to use Homebrew while addition to Homebrew is pending you can install from this local formula.
+## Homebrew
+
+Using my [custom homebrew tap](https://github.com/sdball/homebrew-tap)
 
 ```
-brew install --formula ./Formula/printable-ascii.rb
+brew install sdball/tap/printable-ascii
 ```
 
-# Docker
+# Running with Docker
 
 There's a [printable-ascii docker repo on Docker Hub](https://hub.docker.com/r/sdball/printable-ascii) and a [printable-ascii container page on GitHub](https://github.com/sdball/printable-ascii/pkgs/container/printable-ascii). Both are the exact same images (linux/amd64 and linux/arm64) so use whichever you like.
 
@@ -55,7 +57,7 @@ $ echo "hello123" | printable-ascii --lowercase
 hello
 ```
 
-You can filter anything! Any printable ASCII characters will be output. It can be a fun way to examine binary files.
+You can filter anything! Only printable ASCII characters will be output. It can be a fun way to examine binary files.
 
 ```
 $ cat printable-ascii.png | printable-ascii | head -c 45
