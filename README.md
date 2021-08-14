@@ -41,36 +41,52 @@ $ docker run ghcr.io/sdball/printable-ascii:latest --json --decimal
 When you pipe input to `printable-ascii` it will output the input filtered down to the printable ASCII characters. If you declare ranges of characters to allow then it `printable-ascii` will only print those characters found in the STDIN.
 
 ```
-$ cat Dockerfile | ./bin/printable-ascii --uppercase
+$ cat Dockerfile | printable-ascii --uppercase
 FROMWORKDIRCOPYENTRYPOINT
 ```
 
 ```
-$ echo "hello123" | ./bin/printable-ascii --numeric
+$ echo "hello123" | printable-ascii --numeric
 123
 ```
 
 ```
-$ echo "hello123" | ./bin/printable-ascii --lowercase
+$ echo "hello123" | printable-ascii --lowercase
 hello
 ```
 
 You can filter anything! Any printable ASCII characters will be output. It can be a fun way to examine binary files.
 
 ```
-$ cat printable-ascii.png | ./bin/printable-ascii | head -c 45; echo
+$ cat printable-ascii.png | printable-ascii | head -c 45
 PNGIHDRcH IDATxY\<`0$f~O_ xC IHfOZX}N*uT<;^{<
 
-$ cat printable-ascii.png | ./bin/printable-ascii --alphabetic --numeric | head -c 45; echo
+$ cat printable-ascii.png | printable-ascii --alphabetic --numeric | head -c 45
 PNGIHDRcHIDATxY0fOxCIHfOZXNuT9e2Pe2Pkke2Pe2PG
 
-$ cat printable-ascii@0.5x.png | ./bin/printable-ascii | head -c 45; echo
+$ cat printable-ascii@0.5x.png | printable-ascii | head -c 45
 PNGIHDRwv IDATxS?ssgCeJR*MJ_L)dh052D45""2+u3Z%
 ```
 
 See the "PNG" at the start there? That's actually the printable ASCII part of the header declaring the file is a PNG!
 
 It's like a slower `strings` command that has more filtering options, woo!
+
+### Filtering STDIN from docker run
+
+Filtering STDIN while using `docker run` requires passing the `-i` flag to docker run to allow STDIN to go into the container from the host.
+
+```
+$ echo "xyzzy ⌥pl⌃ugh" | docker run -i sdball/printable-ascii
+xyzzy plugh
+```
+
+Passing options to the script works as it should
+
+```
+$ echo "xyzzy ⌥pl⌃ugh" | docker run -i sdball/printable-ascii --range x-z
+xyzzy
+```
 
 ## Outputting the printable ASCII characters
 
@@ -558,12 +574,12 @@ $ printable-ascii --hex-digits --random 2 --json --times 3 | jq -c '.[]'
 ### Compact JSON
 
 ```
-$ ./bin/printable-ascii --hex-digits --random 2 --json --compact | jq -c '.[]'
+$ printable-ascii --hex-digits --random 2 --json --compact | jq -c '.[]'
 "A0"
 ```
 
 ```
-$ ./bin/printable-ascii --hex-digits --random 2 --json --compact --times 3 | jq -c '.[]'
+$ printable-ascii --hex-digits --random 2 --json --compact --times 3 | jq -c '.[]'
 "B0"
 "D9"
 "BC"
