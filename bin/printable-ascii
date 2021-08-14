@@ -103,10 +103,11 @@ class PrintableAscii
     options = Configuration.parse_options(ARGV)
     header = build_header(options)
     ascii = build_ascii(options)
-    if $stdin.tty?
+    begin
+      first_byte = $stdin.read_nonblock(1)
+      puts filter_stdin(first_byte, $stdin, ascii)
+    rescue IO::EAGAINWaitReadable, EOFError
       Output.for(options[:format]).output(options, header, ascii)
-    else
-      puts filter_stdin($stdin, ascii)
     end
   end
 
@@ -131,13 +132,15 @@ class PrintableAscii
     ascii_list
   end
 
-  def filter_stdin(stdin, ascii)
+  def filter_stdin(first_byte, stdin, ascii)
+    result = first_byte.ascii_only? ? [first_byte] : []
     characters = ascii.map { |a| a[:character] }
-    stdin.read.each_grapheme_cluster.map do |cluster|
+    stdin.read.each_grapheme_cluster do |cluster|
       if characters.include? cluster
-        cluster
+        result << cluster
       end
-    end.compact.join("")
+    end
+    result.compact.join("")
   end
 
   def lazy_random_enumerator(list, count)
