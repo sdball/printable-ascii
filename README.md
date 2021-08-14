@@ -2,6 +2,8 @@
 
 Output all the printable ASCII characters in various representations and formats.
 
+Or, given STDIN, filter the STDIN text to the specified printable ASCII characters.
+
 ![A printed table of ASCII characters with the printable characters highlighted](./printable-ascii@0.5x.png)
 
 # Install
@@ -34,6 +36,44 @@ $ docker run ghcr.io/sdball/printable-ascii:latest --json --decimal
 
 # Usage
 
+## Filtering STDIN
+
+When you pipe input to `printable-ascii` it will output the input filtered down to the printable ASCII characters. If you declare ranges of characters to allow then it `printable-ascii` will only print those characters found in the STDIN.
+
+```
+$ cat Dockerfile | ./bin/printable-ascii --uppercase
+FROMWORKDIRCOPYENTRYPOINT
+```
+
+```
+$ echo "hello123" | ./bin/printable-ascii --numeric
+123
+```
+
+```
+$ echo "hello123" | ./bin/printable-ascii --lowercase
+hello
+```
+
+You can filter anything! Any printable ASCII characters will be output. It can be a fun way to examine binary files.
+
+```
+$ cat printable-ascii.png | ./bin/printable-ascii | head -c 45; echo
+PNGIHDRcH IDATxY\<`0$f~O_ xC IHfOZX}N*uT<;^{<
+
+$ cat printable-ascii.png | ./bin/printable-ascii --alphabetic --numeric | head -c 45; echo
+PNGIHDRcHIDATxY0fOxCIHfOZXNuT9e2Pe2Pkke2Pe2PG
+
+$ cat printable-ascii@0.5x.png | ./bin/printable-ascii | head -c 45; echo
+PNGIHDRwv IDATxS?ssgCeJR*MJ_L)dh052D45""2+u3Z%
+```
+
+See the "PNG" at the start there? That's actually the printable ASCII part of the header declaring the file is a PNG!
+
+It's like a slower `strings` command that has more filtering options, woo!
+
+## Outputting the printable ASCII characters
+
 Running `printable-ascii` by itself will simply print all the printable ASCII characters in plaintext to your console.
 
 ```
@@ -49,10 +89,6 @@ $
 (
 )
 ```
-
-## Help text
-
-Help is accessible with `-h` or `--help`
 
 ## Representations
 
