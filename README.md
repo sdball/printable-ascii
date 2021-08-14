@@ -340,10 +340,10 @@ $ printable-ascii --start-at 40 --end-at 35
 
 The `--random NUMBER` option will output `NUMBER` of random printable ASCII characters.
 
-If you combine this option with `--start-at` / `--end-at` then the random printable ASCII characters will be pulled from that range.
+If you combine this option with `--start-at` / `--end-at`, `--range` or named ranges then the random printable ASCII characters will be pulled from the ranges you declare.
 
 ```
-$ printable-ascii --random 8 --start-at 65 --end-at 90
+$ printable-ascii --random 8 --uppercase
 P
 Y
 O
@@ -355,17 +355,17 @@ I
 ```
 
 ```
-$ printable-ascii --random 1 --start-at 65 --end-at 66
+$ printable-ascii --random 1 --range A-B
 A
 ```
 
 ```
-$ printable-ascii --random 1 --start-at 65 --end-at 66
+$ printable-ascii --random 1 --range A-B
 B
 ```
 
 ```
-$ printable-ascii --start-at A --end-at F --json --random 10 | jq -c '.[][]'
+$ printable-ascii --range A-F --json --random 10 | jq -c '.[][]'
 {"character":"C"}
 {"character":"C"}
 {"character":"F"}
@@ -376,6 +376,48 @@ $ printable-ascii --start-at A --end-at F --json --random 10 | jq -c '.[][]'
 {"character":"B"}
 {"character":"D"}
 {"character":"C"}
+```
+
+If you repeat a range then it will appropriately effect the probability that a character from that range is selected.
+
+If we have one range that's the "A" character and one range that's the "B" character we can see an approximately 50/50 split.
+
+```
+$ printable-ascii --random 1000 --range A-A --range B-B | sort | uniq -c
+ 516 A
+ 484 B
+```
+
+BUT if we repeat the "A" range we can see the probability shift
+
+```
+$ printable-ascii --random 1000 --range A-A --range A-A --range B-B | sort | uniq -c
+ 668 A
+ 332 B
+```
+
+We can shift it still further
+
+```
+$ printable-ascii --random 1000 --range A-A --range A-A --range A-A --range B-B | sort | uniq -c
+ 763 A
+ 237 B
+```
+
+This can be a fun way to generate encrypted-like text with enough spaces to be word-like.
+
+```
+$ printable-ascii --random 40 --times 10 --compact --uppercase --space --space --space --space --space --range .-.
+W JL  EBDRND Z KFOIAWVPER TVFVA E LQBOQA
+MWHWKKVGTVKVVFDTBOU XWQBWGKG .VGHVYNWDZW
+DKFWLB AHXQ RZSDBI ELKJ Y QUPBE .GJAUMTM
+N  NXYNZLDYORPN Z KRUTFM CL TNMYEHJ FQM
+JJQTWCHVJEO LHZ.JQVPXOVHRG L.XLYBF CZ.YR
+ Z. HCI KER BML PJ OQ ANOP EN  BDM GMQBD
+ TOFNPRRKABGCINRJRQFKKMCRVNFXWKALAC. I N
+AXWCCIVOOQ L BW. GGEF.ZBPQ .XWDSMUOULK.Z
+PYZWMJMM L OFROUKLZWSHG OC AHMEKNS VZOZ.
+AS KYEXNZV LNRDXWNQBMXWUJZTMJWBQFLZWJEMK
 ```
 
 ## Ranges
