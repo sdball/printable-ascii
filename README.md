@@ -421,6 +421,7 @@ Each of these options adds the specified characters as a `--range` option. They 
 - `--binary-digits`: the binary digits
 - `--octal-digits`: the octal digits
 - `--hex-digits`: the hex digits
+- `--morse`: morse code characters
 
 The `--binary-digits` can be used a fun way to generate a lot of coin flips.
 
