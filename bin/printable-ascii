@@ -133,8 +133,12 @@ class PrintableAscii
   end
 
   def filter_stdin(first_byte, stdin, ascii)
-    result = first_byte.ascii_only? ? [first_byte] : []
     characters = ascii.map { |a| a[:character] }
+    if first_byte.ascii_only? && characters.include?(first_byte)
+      result = [first_byte]
+    else
+      result = []
+    end
     stdin.read.each_grapheme_cluster do |cluster|
       if characters.include? cluster
         result << cluster
