@@ -1,8 +1,8 @@
 class PrintableAscii < Formula
   desc "Output all printable ASCII characters in various representations and formats"
   homepage "https://github.com/sdball/printable-ascii"
-  url "https://github.com/sdball/printable-ascii/archive/refs/tags/v3.0.1.tar.gz"
-  sha256 "5ae2b0cd56d6a6a05787ec58f7b0e8645f906338ad5a5248379d33a7af8f0332"
+  url "https://github.com/sdball/printable-ascii/archive/refs/tags/v3.1.0.tar.gz"
+  sha256 "9b36185e57b21ddbe0f7272f9246db2f790cd817ed850254fc7426a882e6f097"
   license "MIT"
 
   def install
@@ -10,7 +10,7 @@ class PrintableAscii < Formula
   end
 
   test do
-    ascii_json = [
+    ascii_json = [[
       { "character" => " " },
       { "character" => "!" },
       { "character" => "\"" },
@@ -106,7 +106,7 @@ class PrintableAscii < Formula
       { "character" => "|" },
       { "character" => "}" },
       { "character" => "~" },
-    ]
+    ]]
 
     assert_equal ascii_json, JSON.parse(shell_output("#{bin}/printable-ascii --json"))
   end
