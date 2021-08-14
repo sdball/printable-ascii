@@ -12,7 +12,16 @@ Get `bin/printable-ascii` into your `$PATH` however you like.
 
 ## Homebrew
 
-Using my [custom homebrew tap](https://github.com/sdball/homebrew-tap)
+Using my [custom homebrew tap](https://github.com/sdball/homebrew-tap) installation is easy!
+
+If you install the tap itself then `brew update` will include it when it finds updated formulas.
+
+```
+brew tap sdball/tap
+brew install printable-ascii
+```
+
+Or you can install printable-ascii on its own from the tap.
 
 ```
 brew install sdball/tap/printable-ascii
