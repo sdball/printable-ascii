@@ -31,18 +31,20 @@ brew install sdball/tap/printable-ascii
 
 There's a [printable-ascii docker repo on Docker Hub](https://hub.docker.com/r/sdball/printable-ascii) and a [printable-ascii container page on GitHub](https://github.com/sdball/printable-ascii/pkgs/container/printable-ascii). Both are the exact same images (linux/amd64 and linux/arm64) so use whichever you like.
 
+Because printable-ascii checks to see if STDIN is a TTY you must use the `-t` flag.
+
 ## via Docker Hub
 
 ```
-$ docker run sdball/printable-ascii
-$ docker run sdball/printable-ascii --json --decimal
+$ docker run -t sdball/printable-ascii
+$ docker run -t sdball/printable-ascii --json --decimal
 ```
 
 ## via GitHub Container Registry
 
 ```
-$ docker run ghcr.io/sdball/printable-ascii:latest
-$ docker run ghcr.io/sdball/printable-ascii:latest --json --decimal
+$ docker run -t ghcr.io/sdball/printable-ascii:latest
+$ docker run -t ghcr.io/sdball/printable-ascii:latest --json --decimal
 ```
 
 # Usage
