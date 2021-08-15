@@ -8,13 +8,13 @@ Or, given STDIN, filter the STDIN text to the specified printable ASCII characte
 
 # Install
 
-Get `bin/printable-ascii` into your `$PATH` however you like.
+Get `bin/printable-ascii` into your `$PATH` however you like. There are no other dependencies other than Ruby itself. The Ruby you already have on your system should be fine.
 
 ## Homebrew
 
-Using my [custom homebrew tap](https://github.com/sdball/homebrew-tap) installation is easy!
+If you use my [custom homebrew tap](https://github.com/sdball/homebrew-tap) then installation is easy!
 
-If you install the tap itself then `brew update` will include it when it finds updated formulas.
+If you install the tap itself then `brew update` will find updates and available new formula.
 
 ```
 brew tap sdball/tap
