@@ -151,13 +151,13 @@ class PrintableAscii
     when :character
       number.chr
     when :binary
-      sprintf("%b", number)
+      sprintf("%.7b", number)
     when :octal
-      sprintf("%o", number)
+      sprintf("%.3o", number)
     when :decimal
-      sprintf("%d", number)
+      sprintf("%.3d", number)
     when :hexadecimal
-      sprintf("%x", number)
+      sprintf("%.2x", number)
     when :name
       CHARACTER_NAME.fetch(number, number)
     when :info_url
