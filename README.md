@@ -85,6 +85,44 @@ See the "PNG" at the start there? That's actually the printable ASCII part of th
 
 It's like a slower `strings` command that has more filtering options, woo!
 
+You can use the `--control` and `--newline` flags to include ASCII control characters.
+
+e.g. the Dockerfile example with newlines.
+
+```bash
+# by default we only output printable ASCII which does not include newline
+$ cat Dockerfile | printable-ascii
+FROM ruby:3.0-alpineWORKDIR /usr/src/appCOPY bin/printable-ascii ./ENTRYPOINT ["./printable-ascii"]
+
+
+# we must also declare --printable or else we'll ONLY get newlines in the output
+$ cat Dockerfile | printable-ascii --newline --printable
+FROM ruby:3.0-alpine
+WORKDIR /usr/src/app
+COPY bin/printable-ascii ./
+ENTRYPOINT ["./printable-ascii"]
+
+
+$ cat Dockerfile | printable-ascii --newline --uppercase
+FROM
+WORKDIR
+COPY
+ENTRYPOINT
+```
+
+Any ASCII control characters will be translated into printable ASCII. e.g the NUL character will print as "<NUL>"
+
+The newline (line feed) character will translate to "<EOL>" unless you use the `--newline` option which will preserve literal newlines.
+
+```
+$ cat printable-ascii.png | printable-ascii --control --printable | head -c 90
+PNG<SUB><EOL><NUL><NUL><NUL><CR>IHDR<NUL><NUL><ACK><NUL><NUL><ENQ><NAK><BS><STX><NUL><NUL>
+
+$ cat printable-ascii.png | printable-ascii --control --newline --printable | head -c 90
+PNG<SUB>
+<NUL><NUL><NUL><CR>IHDR<NUL><NUL><ACK><NUL><NUL><ENQ><NAK><BS><STX><NUL><NUL><NUL
+```
+
 ### Filtering STDIN from docker run
 
 Filtering STDIN while using `docker run` requires passing the `-i` flag to docker run to allow STDIN to go into the container from the host.
@@ -519,6 +557,7 @@ Note: the output of `--range` declarations is NOT ASCII sorted. The ranges will 
 
 Each of these options adds the specified characters as a `--range` option. They can be combined with each other and other `--range` declarations.
 
+- `--printable`: all the printable ASCII (the default, but also useful if combining with --newline or --control)
 - `--punctuation`: all the punctuation characters
 - `--alphabetic` / `--letters`: all the letter characters
 - `--uppercase`: all the uppercase letters
@@ -529,8 +568,10 @@ Each of these options adds the specified characters as a `--range` option. They 
 - `--octal-digits`: the octal digits
 - `--hex-digits`: the hex digits
 - `--morse`: morse code characters
+- `--newline`: the newline control character
+- `--control`: ASCII control characters (specially represented as printable ASCII e.g. "NUL")
 
-The `--binary-digits` can be used a fun way to generate a lot of coin flips.
+The `--binary-digits` flag can be used a fun way to generate a lot of coin flips.
 
 ```
 $ printable-ascii --binary-digits --random 10

@@ -87,7 +87,7 @@ class ConsoleOutput
   def self.spacing(element)
     case element.to_s.downcase
     when "name"
-      22 + 3
+      27 + 3
     when "info_url"
       29 + 3
     else
@@ -106,7 +106,7 @@ class PrintableAscii
     if $stdin.tty?
       Output.for(options[:format]).output(options, header, ascii)
     else
-      puts filter_stdin($stdin, ascii)
+      puts filter_stdin($stdin, ascii, options)
     end
   end
 
@@ -121,6 +121,7 @@ class PrintableAscii
     options[:ranges].each do |range|
       range[0].upto(range[1]) do |n|
         result = {}
+        result[:literal] = n.chr
         options[:representations].each do |choice|
           result[choice] = format(n, choice)
         end
@@ -131,10 +132,20 @@ class PrintableAscii
     ascii_list
   end
 
-  def filter_stdin(stdin, ascii)
-    characters = ascii.map { |a| a[:character] }
+  def filter_stdin(stdin, ascii, options)
+    characters = ascii.map { |a| a[:literal] }
     stdin.read.each_grapheme_cluster.map do |cluster|
-      cluster if characters.include?(cluster)
+      if characters.include? cluster
+        if CONTROL_TO_PRINTABLE.has_key? cluster.ord
+          if cluster == "\n" && options[:preserve_newlines]
+            cluster
+          else
+            "<%s>" % CONTROL_TO_PRINTABLE[cluster.ord]
+          end
+        else
+          cluster
+        end
+      end
     end.compact.join("")
   end
 
@@ -149,7 +160,7 @@ class PrintableAscii
   def format(number, representation)
     case representation
     when :character
-      number.chr
+      CONTROL_TO_PRINTABLE.fetch(number, number.chr)
     when :binary
       sprintf("%.7b", number)
     when :octal
@@ -170,11 +181,11 @@ end
 
 class Configuration
   def self.restrict_to_printable_ascii(n)
-    if n < ASCII_START
+    if n < PRINTABLE_ASCII_START
       raise OptionParser::InvalidArgument.new("#{n} is not a valid value")
     end
 
-    if n > ASCII_END
+    if n > PRINTABLE_ASCII_END
       raise OptionParser::InvalidArgument.new("#{n} is not a valid value")
     end
 
@@ -284,12 +295,12 @@ class Configuration
         end
       end
 
-      opts.on("-s", "--start-at NUMBER|ASCII", "Start ASCII list at base10 NUMBER (#{ASCII_START}-#{ASCII_END}) or ASCII character") do |given|
+      opts.on("-s", "--start-at NUMBER|ASCII", "Start ASCII list at base10 NUMBER (#{PRINTABLE_ASCII_START}-#{PRINTABLE_ASCII_END}) or ASCII character") do |given|
         start_at = parse_start_end(given)
         options[:start_at] = start_at
       end
 
-      opts.on("-e", "--end-at NUMBER|ASCII", "End ASCII list at base10 NUMBER (#{ASCII_START}-#{ASCII_END}) or ASCII character") do |given|
+      opts.on("-e", "--end-at NUMBER|ASCII", "End ASCII list at base10 NUMBER (#{PRINTABLE_ASCII_START}-#{PRINTABLE_ASCII_END}) or ASCII character") do |given|
         end_at = parse_start_end(given)
         options[:end_at] = end_at
       end
@@ -321,52 +332,69 @@ class Configuration
         raise OptionParser::InvalidArgument.new(r)
       end
 
-      opts.on("--punctuation", "Show punctuation characters. Added as a set of ranges") do
+      opts.on("--punctuation", "Include the punctuation characters") do
         options[:ranges].concat(PUNCTUATION)
       end
 
-      opts.on("--alphabetic", "Show alphabetic characters. Added as a set of ranges") do
+      opts.on("--alphabetic", "Include the alphabetic characters") do
         options[:ranges].concat(UPPERCASE, LOWERCASE)
       end
 
-      opts.on("--letters", "Show alphabetic characters. Added as a set of ranges") do
+      opts.on("--letters", "Include the alphabetic characters") do
         options[:ranges].concat(UPPERCASE, LOWERCASE)
       end
 
-      opts.on("--uppercase", "Show uppercase alphabetic characters. Added as a range") do
+      opts.on("--uppercase", "Include the uppercase alphabetic characters") do
         options[:ranges].concat(UPPERCASE)
       end
 
-      opts.on("--lowercase", "Show lowercase alphabetic characters. Added as a range") do
+      opts.on("--lowercase", "Include the lowercase alphabetic characters") do
         options[:ranges].concat(LOWERCASE)
       end
 
-      opts.on("--numeric", "Show number characters. Added as a range (same as --digits)") do
+      opts.on("--numeric", "Include the number characters (same as --digits)") do
         options[:ranges].concat(NUMERIC)
       end
 
-      opts.on("--digits", "Show number characters. Added as a range (same as --numeric)") do
+      opts.on("--digits", "Include the number characters (same as --numeric)") do
         options[:ranges].concat(NUMERIC)
       end
 
-      opts.on("--space", "Show the space character. Fun fact: <tab> is not in the set of printable ASCII") do
+      opts.on("--space", "Include the the space character. Fun fact: <tab> is not in the set of printable ASCII") do
         options[:ranges].concat(SPACE)
       end
 
-      opts.on("--binary-digits", "Show the binary digits. Added as a range") do
+      opts.on("--newline", "Include the newline (line feed) control character") do
+        options[:preserve_newlines] = true
+        options[:ranges].concat(NEWLINE)
+      end
+
+      opts.on("--line-feed", "Include the line feed control character") do
+        options[:ranges].concat(NEWLINE)
+      end
+
+      opts.on("--binary-digits", "Include the the binary digits") do
         options[:ranges].concat(BINARY_DIGITS)
       end
 
-      opts.on("--octal-digits", "Show the octal digits. Added as a range") do
+      opts.on("--octal-digits", "Include the the octal digits") do
         options[:ranges].concat(OCTAL_DIGITS)
       end
 
-      opts.on("--hex-digits", "Show the hexadecimal digits. Added as a range") do
+      opts.on("--hex-digits", "Include the the hexadecimal digits") do
         options[:ranges].concat(HEX_DIGITS)
       end
 
-      opts.on("--morse", "Morse code characters. Added as a range") do
+      opts.on("--morse", "Morse code characters") do
         options[:ranges].concat(MORSE)
+      end
+
+      opts.on("--printable", "All the printable ASCII") do
+        options[:ranges].concat(PRINTABLE)
+      end
+
+      opts.on("--control", "All the control characters") do
+        options[:ranges].concat(CONTROL)
       end
 
       opts.on("--hex-color", "Output a random HEX color") do
@@ -418,8 +446,8 @@ class Configuration
     end
 
     if options[:ranges].length == 0
-      start_at = options[:start_at] ? options[:start_at] : ASCII_START
-      end_at = options[:end_at] ? options[:end_at] : ASCII_END
+      start_at = options[:start_at] ? options[:start_at] : PRINTABLE_ASCII_START
+      end_at = options[:end_at] ? options[:end_at] : PRINTABLE_ASCII_END
       options[:ranges] << [start_at, end_at]
     end
 
@@ -427,8 +455,12 @@ class Configuration
   end
 end
 
-ASCII_START = 32
-ASCII_END = 126
+PRINTABLE_ASCII_START = 32
+PRINTABLE_ASCII_END = 126
+
+PRINTABLE = [
+  [PRINTABLE_ASCII_START, PRINTABLE_ASCII_END],
+]
 
 PUNCTUATION = [
   [32, 47],
@@ -471,7 +503,48 @@ MORSE = [
   [45, 46],
 ]
 
+NEWLINE = [
+  [10, 10],
+]
+
+CONTROL = [
+  [0, 31],
+  [127, 127],
+]
+
 CHARACTER_NAME = {
+  0 => "NULL",
+  1 => "START OF HEADING",
+  2 => "START OF TEXT",
+  3 => "END OF TEXT",
+  4 => "END OF TRANSMISSION",
+  5 => "ENQUIRY",
+  6 => "ACKNOWLEDGE",
+  7 => "BELL",
+  8 => "BACKSPACE",
+  9 => "CHARACTER TABULATION",
+  10 => "LINE FEED (LF)",
+  11 => "LINE TABULATION",
+  12 => "FORM FEED (FF)",
+  13 => "CARRIAGE RETURN (CR)",
+  14 => "SHIFT OUT",
+  15 => "SHIFT IN",
+  16 => "DATA LINK ESCAPE",
+  17 => "DEVICE CONTROL ONE",
+  18 => "DEVICE CONTROL TWO",
+  19 => "DEVICE CONTROL THREE",
+  20 => "DEVICE CONTROL FOUR",
+  21 => "NEGATIVE ACKNOWLEDGE",
+  22 => "SYNCHRONOUS IDLE",
+  23 => "END OF TRANSMISSION BLOCK",
+  24 => "CANCEL",
+  25 => "END OF MEDIUM",
+  26 => "SUBSTITUTE",
+  27 => "ESCAPE",
+  28 => "INFORMATION SEPARATOR FOUR",
+  29 => "INFORMATION SEPARATOR THREE",
+  30 => "INFORMATION SEPARATOR TWO",
+  31 => "INFORMATION SEPARATOR ONE",
   32 => "SPACE",
   33 => "EXCLAMATION MARK",
   34 => "QUOTATION MARK",
@@ -567,6 +640,43 @@ CHARACTER_NAME = {
   124 => "VERTICAL LINE",
   125 => "RIGHT CURLY BRACKET",
   126 => "TILDE",
+  127 => "DELETE",
+}
+
+CONTROL_TO_PRINTABLE = {
+  0 => "NUL",
+  1 => "SOH",
+  2 => "STX",
+  3 => "ETX",
+  4 => "EOT",
+  5 => "ENQ",
+  6 => "ACK",
+  7 => "BEL",
+  8 => "BS",
+  9 => "TAB",
+  10 => "EOL",
+  11 => "VT",
+  12 => "FF",
+  13 => "CR",
+  14 => "SO",
+  15 => "SI",
+  16 => "DLE",
+  17 => "DC1",
+  18 => "DC2",
+  19 => "DC3",
+  20 => "DC4",
+  21 => "NAK",
+  22 => "SYN",
+  23 => "ETB",
+  24 => "CAN",
+  25 => "EOM",
+  26 => "SUB",
+  27 => "ESC",
+  28 => "FS",
+  29 => "GS",
+  30 => "RS",
+  31 => "US",
+  127 => "DEL",
 }
 
 if $0 == __FILE__
